@@ -1,37 +1,37 @@
 ﻿namespace Queens
 {
-    internal class Grid
+    public class Grid
     {
-        private readonly int _rows;
-        private readonly int _columns;
-        private readonly List<List<Cell?>> _grid = [];
-        private readonly Dictionary<int, List<Cell?>> _groups = [];
-        private readonly HashSet<(int, int)> _crowns = [];
+        public int Rows { get; private set; }
+        public int Columns { get; private set; }
+        public List<List<Cell?>> Cells { get; private set; } = [];
+        public Dictionary<int, List<Cell?>> Groups { get; private set; } = [];
+        public HashSet<(int, int)> Crowns { get; private set; } = [];
 
         public Grid(List<List<int>> grid)
         {
-            _rows = grid.Count;
-            _columns = grid[0].Count;
+            Rows = grid.Count;
+            Columns = grid[0].Count;
 
-            for (int row = 0; row < _rows; row++)
+            for (int row = 0; row < Rows; row++)
             {
                 List<Cell?> newRow = [];
 
-                for (int column = 0; column < _columns; column++)
+                for (int column = 0; column < Columns; column++)
                 {
                     Cell cell = new(grid[row][column], row, column);
                     newRow.Add(cell);
 
-                    if (!_groups.TryAdd(cell.Color, [cell]))
+                    if (!Groups.TryAdd(cell.Color, [cell]))
                     {
-                        _groups[cell.Color].Add(cell);
+                        Groups[cell.Color].Add(cell);
                     }
                 }
 
-                _grid.Add(newRow);
+                Cells.Add(newRow);
             }
 
-            _groups = _groups
+            Groups = Groups
                 .OrderBy(kvp => kvp.Value.Count)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
@@ -39,7 +39,7 @@
         public void Run()
         {
             Dictionary<int, List<Cell?>> groups;
-            GetCopy(_groups, out groups);
+            GetCopy(Groups, out groups);
 
             Execute(groups);
 
@@ -58,8 +58,7 @@
                     int row = cell.Row;
                     int column = cell.Column;
 
-                    _crowns.Add((row, column));
-                    //if (_crowns.Count == _groups.Count) return;
+                    Crowns.Add((row, column));
 
                     GetCopy(groups, out Dictionary<int, List<Cell?>> newGroups);
 
@@ -70,8 +69,8 @@
                         Execute(newGroups);
                     }
 
-                    if (_crowns.Count == _groups.Count) return;
-                    else _crowns.Remove((row, column));
+                    if (Crowns.Count == Groups.Count) return;
+                    else Crowns.Remove((row, column));
                 }
             }
         }
@@ -132,14 +131,14 @@
 
                 if (IsValidCell(neighbor_row, neighbor_column))
                 {
-                    removables.Add(_grid[neighbor_row][neighbor_column]);
+                    removables.Add(Cells[neighbor_row][neighbor_column]);
                 }
             }
         }
 
         private void GetRowCells(HashSet<Cell?> removables, int row)
         {
-            foreach (Cell? cell in _grid[row])
+            foreach (Cell? cell in Cells[row])
             {
                 removables.Add(cell);
             }
@@ -149,16 +148,16 @@
         {
             int row = 0;
 
-            while (row < _rows)
+            while (row < Rows)
             {
-                removables.Add(_grid[row][column]);
+                removables.Add(Cells[row][column]);
                 row++;
             }
         }
 
         private bool IsValidCell(int row, int column)
         {
-            return (row >= 0 && row < _rows && column >= 0 && column < _columns);
+            return (row >= 0 && row < Rows && column >= 0 && column < Columns);
         }
 
         private bool EmptyGroups(Dictionary<int, List<Cell?>> groups)
@@ -173,38 +172,10 @@
 
         private void PrintCrowns()
         {
-            foreach ((int, int) crown in _crowns.OrderBy(t => t.Item1))
+            foreach ((int, int) crown in Crowns.OrderBy(t => t.Item1))
             {
                 Console.WriteLine($"[ {crown.Item1}, {crown.Item2} ]");
             }
-        }
-
-        // Helper methods
-        public void PrintGrid()
-        {
-            Console.WriteLine(" <<< Grid >>>");
-
-            foreach (List<Cell?> row in _grid)
-            {
-                Console.WriteLine($"[ {string.Join(", ", row.Select(c => c == null ? 0 : c.Color))} ]");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-        }
-
-        public void PrintGroups()
-        {
-            Console.WriteLine(" <<< Groups >>>");
-
-
-            foreach (KeyValuePair<int, List<Cell?>> kvp in _groups)
-            {
-                Console.WriteLine($"{kvp.Key}: [ {string.Join(", ", kvp.Value.Select(c => c == null ? 0 : c.Color).ToList())} ]");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
         }
     }
 }

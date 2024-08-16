@@ -1,6 +1,6 @@
 ﻿namespace Queens
 {
-    internal class Cell
+    public class Cell
     {
         public int Color { get; }
         public int Row { get; }
