@@ -1,6 +1,6 @@
 # Queens
 
-C# console to find solution for QUEENS daily puzzle by LinkedIn
+C# console app to find the solution for QUEENS daily puzzle by LinkedIn
 
 How to use
   * Assign a number (1 onwards) for different colours in the grid.
