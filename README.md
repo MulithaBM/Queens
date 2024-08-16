@@ -1,4 +1,4 @@
-# Queens
+# Queens 👑
 
 C# console app to find the solution for QUEENS daily puzzle by LinkedIn
 
