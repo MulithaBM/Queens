@@ -44,15 +44,15 @@
         {
             GetCopy(Groups, out Dictionary<int, List<Cell>> groups);
 
-            Execute(groups);
+            FindCrowns(groups);
 
             PrintCrowns();
         }
 
-        private void Execute(Dictionary<int, List<Cell>> groups)
+        private void FindCrowns(Dictionary<int, List<Cell>> groups)
         {
-            List<Cell> cells = groups.First().Value;
-            groups.Remove(groups.First().Key);
+            List<Cell> cells = groups.First().Value; // get the cells in the current color group
+            groups.Remove(groups.First().Key); // remove current color group from groups
 
             foreach (Cell? cell in cells)
             {
@@ -67,9 +67,9 @@
 
                     RemoveCells(newGroups, row, column);
 
-                    if (newGroups.Count > 0 && !EmptyGroups(newGroups))
+                    if (newGroups.Count > 0 && !HaveEmptyGroups(newGroups))
                     {
-                        Execute(newGroups);
+                        FindCrowns(newGroups);
                     }
 
                     if (Crowns.Count == Groups.Count) return;
@@ -163,7 +163,7 @@
             return (row >= 0 && row < Rows && column >= 0 && column < Columns);
         }
 
-        private static bool EmptyGroups(Dictionary<int, List<Cell>> groups)
+        private static bool HaveEmptyGroups(Dictionary<int, List<Cell>> groups)
         {
             foreach (KeyValuePair<int, List<Cell>> kvp in groups)
             {
