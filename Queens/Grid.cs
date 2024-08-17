@@ -78,7 +78,7 @@
             }
         }
 
-        private void GetCopy(Dictionary<int, List<Cell>> original, out Dictionary<int, List<Cell>> copy)
+        private static void GetCopy(Dictionary<int, List<Cell>> original, out Dictionary<int, List<Cell>> copy)
         {
             copy = original.ToDictionary(
                 kvp => kvp.Key,
@@ -163,7 +163,7 @@
             return (row >= 0 && row < Rows && column >= 0 && column < Columns);
         }
 
-        private bool EmptyGroups(Dictionary<int, List<Cell>> groups)
+        private static bool EmptyGroups(Dictionary<int, List<Cell>> groups)
         {
             foreach (KeyValuePair<int, List<Cell>> kvp in groups)
             {
