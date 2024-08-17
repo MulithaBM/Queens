@@ -3,9 +3,13 @@
     public class Grid
     {
         public int Rows { get; private set; }
+
         public int Columns { get; private set; }
-        public List<List<Cell?>> Cells { get; private set; } = [];
-        public Dictionary<int, List<Cell?>> Groups { get; private set; } = [];
+
+        public List<List<Cell>> Cells { get; private set; } = [];
+
+        public Dictionary<int, List<Cell>> Groups { get; private set; } = [];
+
         public HashSet<(int, int)> Crowns { get; private set; } = [];
 
         public Grid(List<List<int>> grid)
@@ -15,7 +19,7 @@
 
             for (int row = 0; row < Rows; row++)
             {
-                List<Cell?> newRow = [];
+                List<Cell> newRow = [];
 
                 for (int column = 0; column < Columns; column++)
                 {
@@ -38,17 +42,16 @@
 
         public void Run()
         {
-            Dictionary<int, List<Cell?>> groups;
-            GetCopy(Groups, out groups);
+            GetCopy(Groups, out Dictionary<int, List<Cell>> groups);
 
             Execute(groups);
 
             PrintCrowns();
         }
 
-        private void Execute(Dictionary<int, List<Cell?>> groups)
+        private void Execute(Dictionary<int, List<Cell>> groups)
         {
-            List<Cell?> cells = groups.First().Value;
+            List<Cell> cells = groups.First().Value;
             groups.Remove(groups.First().Key);
 
             foreach (Cell? cell in cells)
@@ -60,7 +63,7 @@
 
                     Crowns.Add((row, column));
 
-                    GetCopy(groups, out Dictionary<int, List<Cell?>> newGroups);
+                    GetCopy(groups, out Dictionary<int, List<Cell>> newGroups);
 
                     RemoveCells(newGroups, row, column);
 
@@ -75,27 +78,27 @@
             }
         }
 
-        private void GetCopy(Dictionary<int, List<Cell?>> original, out Dictionary<int, List<Cell?>> copy)
+        private void GetCopy(Dictionary<int, List<Cell>> original, out Dictionary<int, List<Cell>> copy)
         {
             copy = original.ToDictionary(
                 kvp => kvp.Key,
-                kvp => new List<Cell?>(kvp.Value)
+                kvp => new List<Cell>(kvp.Value)
             );
         }
 
-        private void RemoveCells(Dictionary<int, List<Cell?>> groups, int row, int column)
+        private void RemoveCells(Dictionary<int, List<Cell>> groups, int row, int column)
         {
-            HashSet<Cell?> removables = [];
+            HashSet<Cell> removables = [];
 
             GetNeighbors(removables, row, column);
             GetRowCells(removables, row);
             GetColumnCells(removables, column);
 
-            foreach (Cell? cell in removables)
+            foreach (Cell cell in removables)
             {
                 if (cell != null)
                 {
-                    groups.TryGetValue(cell.Color, out List<Cell?>? group);
+                    groups.TryGetValue(cell.Color, out List<Cell>? group);
 
                     if (group != null)
                     {
@@ -110,7 +113,7 @@
             }
         }
 
-        private void GetNeighbors(HashSet<Cell?> removables, int row, int column)
+        private void GetNeighbors(HashSet<Cell> removables, int row, int column)
         {
             List<(int, int)> deltas =
             [
@@ -136,7 +139,7 @@
             }
         }
 
-        private void GetRowCells(HashSet<Cell?> removables, int row)
+        private void GetRowCells(HashSet<Cell> removables, int row)
         {
             foreach (Cell? cell in Cells[row])
             {
@@ -144,7 +147,7 @@
             }
         }
 
-        private void GetColumnCells(HashSet<Cell?> removables, int column)
+        private void GetColumnCells(HashSet<Cell> removables, int column)
         {
             int row = 0;
 
@@ -160,9 +163,9 @@
             return (row >= 0 && row < Rows && column >= 0 && column < Columns);
         }
 
-        private bool EmptyGroups(Dictionary<int, List<Cell?>> groups)
+        private bool EmptyGroups(Dictionary<int, List<Cell>> groups)
         {
-            foreach (KeyValuePair<int, List<Cell?>> kvp in groups)
+            foreach (KeyValuePair<int, List<Cell>> kvp in groups)
             {
                 if (kvp.Value.Count == 0) return true;
             }
